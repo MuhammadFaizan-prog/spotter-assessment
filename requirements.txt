@@ -1,0 +1,5 @@
+# Runtime dependencies (used by Vercel for api/index.py and for local dev)
+Django>=5.1,<5.2
+djangorestframework>=3.15,<3.18
+requests>=2.32,<3
+tzdata>=2024.1

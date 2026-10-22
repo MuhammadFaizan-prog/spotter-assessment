@@ -1,0 +1,72 @@
+/* Design tokens — see DESIGN.md for rationale. */
+:root {
+  /* Surfaces: "night dispatch" — blue-black, low glare for cab and control-room use */
+  --ink-0: #07090d; /* map letterbox */
+  --ink-1: #0b0f14; /* app background */
+  --ink-2: #11161d; /* panel */
+  --ink-3: #171e27; /* raised card */
+  --ink-4: #1e2732; /* hover */
+  --line-1: #222c38; /* hairline */
+  --line-2: #2e3a48; /* control border */
+  --text-1: #e7ecf2;
+  --text-2: #a9b4c2;
+  --text-3: #75818f;
+  --accent: #f4f7fa; /* primary action = high-contrast white, keeps hue free for risk */
+  --accent-ink: #0b0f14;
+  --focus: #8ecbff;
+
+  /* Semantic risk scale (Okabe–Ito, colour-blind safe) */
+  --risk-0: #56b4e9; /* Low */
+  --risk-1: #f0e442; /* Moderate */
+  --risk-2: #e69f00; /* High */
+  --risk-3: #d55e00; /* Severe */
+  --risk-4: #cc79a7; /* No Travel (+ hatch) */
+  --danger-bg: #2a1410;
+  --danger-line: #6b2a14;
+
+  /* Type */
+  --font-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --fs-11: 0.6875rem;
+  --fs-12: 0.75rem;
+  --fs-13: 0.8125rem;
+  --fs-14: 0.875rem;
+  --fs-16: 1rem;
+  --fs-20: 1.25rem;
+  --lh-tight: 1.25;
+  --lh-body: 1.45;
+  --tracking-caps: 0.08em;
+
+  /* Spacing (4px base) */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+
+  /* Radius */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-pill: 999px;
+
+  /* Elevation */
+  --shadow-float: 0 10px 30px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --t-fast: 120ms;
+  --t-med: 220ms;
+
+  --panel-w: 412px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --t-fast: 0ms;
+    --t-med: 0ms;
+  }
+}
