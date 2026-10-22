@@ -8,9 +8,12 @@ import '@fontsource/ibm-plex-mono/latin-500.css'
 import './styles/tokens.css'
 import './styles/app.css'
 import App from './App'
+import ErrorBoundary from './components/ErrorBoundary'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <ErrorBoundary label="Spotter Weather Routing">
+      <App />
+    </ErrorBoundary>
   </StrictMode>,
 )

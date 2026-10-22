@@ -1207,3 +1207,21 @@ p {
     font-size: var(--fs-12);
   }
 }
+
+.crash {
+  margin: var(--s-8) auto;
+  max-width: 420px;
+  padding: var(--s-5);
+  border-radius: var(--r-lg);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-line);
+  display: grid;
+  gap: var(--s-2);
+}
+.stage .crash {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+}

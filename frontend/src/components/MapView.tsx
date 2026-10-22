@@ -142,14 +142,22 @@ export default function MapView({ plan, selectedId, hour, metric, showHeatmap, f
   // ---- init once
   useEffect(() => {
     if (!container.current) return
-    const map = new maplibregl.Map({
-      container: container.current,
-      style: STYLE_URL,
-      center: US_CENTER,
-      zoom: 3.6,
-      attributionControl: { compact: true },
-      fadeDuration: 0,
-    })
+    let map: MLMap
+    try {
+      map = new maplibregl.Map({
+        container: container.current,
+        style: STYLE_URL,
+        center: US_CENTER,
+        zoom: 3.6,
+        attributionControl: { compact: true },
+        fadeDuration: 0,
+      })
+    } catch (err) {
+      // e.g. WebGL disabled: keep the planner usable without the map.
+      console.error('Map failed to initialise', err)
+      setMapError('This browser could not start the WebGL map.')
+      return
+    }
     mapRef.current = map
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right')
     map.on('error', (e) => {
@@ -283,6 +291,7 @@ export default function MapView({ plan, selectedId, hour, metric, showHeatmap, f
     return () => {
       map.remove()
       mapRef.current = null
+      setReady(false)
     }
   }, [])
 

@@ -5,6 +5,7 @@ import CheckpointTimeline from './components/CheckpointTimeline'
 import MapView from './components/MapView'
 import TimeDock from './components/TimeDock'
 import Legend from './components/Legend'
+import ErrorBoundary from './components/ErrorBoundary'
 import { ApiError, planTrip } from './api'
 import type { HeatMetric, Plan, PlanInput } from './types'
 import { fmtDayTime, fmtLoad } from './lib/format'
@@ -165,6 +166,7 @@ export default function App() {
       </aside>
 
       <main className="stage">
+        <ErrorBoundary label="The map">
         <MapView
           plan={plan}
           selectedId={selectedId}
@@ -175,6 +177,7 @@ export default function App() {
           onSelectRoute={setSelectedId}
           onFocusCheckpoint={onFocusCheckpoint}
         />
+        </ErrorBoundary>
         {status === 'loading' && <div className="stage__progress" role="progressbar" aria-label="Planning" />}
         {plan && (
           <div className="stage__overlay">

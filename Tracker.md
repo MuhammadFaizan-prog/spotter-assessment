@@ -8,7 +8,7 @@ MVP complete; deployed to Vercel. Owner still to record the Loom walkthrough and
 |---|---|---|---|---|---|---|
 | US1 | 3 routes for any trip | P0 | exactly 3 ranked routes | done | ✅ | live Dallas→Denver: A osrm, B osrm-alternative, C via-point; `test_plan_returns_three_ranked_routes` |
 | US2 | Checkpoints with ETA + weather | P0 | mile 0 ETA = departure, monotonic ETAs, 10/25/50 | done | ✅ | `test_sampling.py`, live plan at 10 mi (≈80–90 checkpoints/route) |
-| US3 | Correct risk + load rules | P0 | every edge tested | done | ✅ | `test_risk.py` (44 cases) |
+| US3 | Correct risk + load rules | P0 | every edge tested | done | ✅ | `test_risk.py` (39 cases) |
 | US4 | Explainable recommendation | P0 | documented order, reason line | done | ✅ | `test_recommend.py` |
 | US5 | 0–48 h heatmap slider | P0 | no network on scrub | done | ✅ | paint-expression swap only (MapView.tsx) |
 | US6 | Mobile + keyboard | P1 | ≤900 px stacked, focus rings, combobox keys | done | ✅ | CSS breakpoints; ARIA combobox/radiogroups |
