@@ -2,7 +2,8 @@
 
 Weather-aware truck routing: enter origin, destination, departure time and load weight; get **three routes** scored by the forecast **at the truck's ETA** every 10 / 25 / 50 miles, a recommendation, and a **0–48 h weather heatmap** along the corridor.
 
-- **Live app:** HOSTED_URL
+- **Live app:** https://spotter-weather-routing-olive.vercel.app
+- **Repo:** https://github.com/MuhammadFaizan-prog/spotter-assessment
 - **Stack:** React 19 + Vite + TypeScript + MapLibre GL · Django 5.1 + Django REST Framework · Vercel (static SPA + Python serverless function)
 - **APIs (all free, keyless):** OSRM (routing), Open-Meteo (hourly forecast), Photon / OpenStreetMap (geocoding), CARTO Dark Matter (map tiles)
 
@@ -113,7 +114,7 @@ cd backend && pytest -q
 - `test_recommend.py` — each step of the ordering, No-Travel-before-Severe, float-noise ties, verdict text.
 - `test_api.py` — end-to-end `/api/plan` with stubbed OSRM/Open-Meteo (3 routes, ranks, load-rule Severe, 49-hour frames), validation errors, upstream failure → 502.
 
-Frontend: `npm run typecheck` (strict TS) and `npm run build`.
+Frontend: `npm run typecheck` (strict TS), `npm test` (Vitest + Testing Library smoke tests: sample trip renders three ranked routes; the panel survives a WebGL failure) and `npm run build`.
 
 ## Limitations
 - Car-profile routing with a speed cap; no truck restrictions, no hours-of-service breaks.
