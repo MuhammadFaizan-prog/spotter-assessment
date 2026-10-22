@@ -3,10 +3,15 @@ import * as maplibregl from 'maplibre-gl'
 import type { GeoJSONSource, Map as MLMap, ExpressionSpecification } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import type * as GeoJSON from 'geojson'
+// MapLibre 6 resolves its worker as a sibling file of its own module, which a
+// bundler does not emit. Bundle the worker explicitly and hand MapLibre its URL.
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'
 import type { Checkpoint, HeatMetric, Plan } from '../types'
 import { RISK, rainScore, riskOf, snowScore, windScore } from '../lib/risk'
 import { cumulativeMiles, sliceLine } from '../lib/geo'
 import { fmtDayTime } from '../lib/format'
+
+maplibregl.setWorkerUrl(workerUrl)
 
 const STYLE_URL = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
 const US_CENTER: [number, number] = [-98.5, 39.3]
@@ -125,6 +130,23 @@ function popupHtml(plan: Plan, routeName: string, c: Checkpoint): string {
     </div>`
 }
 
+/** Keep routes clear of the floating legend (top-left) and time dock (bottom). */
+function overlayPadding(el: HTMLElement) {
+  const narrow = window.innerWidth < 900
+  const pad = narrow ? { top: 40, bottom: 40, left: 30, right: 30 } : { top: 60, bottom: 60, left: 60, right: 70 }
+  const box = el.getBoundingClientRect()
+  const stage = el.closest('.stage') ?? document
+  const legend = stage.querySelector<HTMLElement>('.legend[open]')?.getBoundingClientRect()
+  const dock = stage.querySelector<HTMLElement>('.dock')?.getBoundingClientRect()
+  if (dock && dock.height) pad.bottom += Math.max(0, box.bottom - dock.top)
+  // A tall top-left legend steals width, not height: shift the fit right of it.
+  if (legend && legend.width && box.right - legend.right > box.width * 0.45) pad.left = Math.max(pad.left, legend.right - box.left + 24)
+  // Never let padding exceed the canvas (fitBounds would no-op).
+  pad.left = Math.min(pad.left, box.width * 0.5)
+  pad.bottom = Math.min(pad.bottom, box.height * 0.55)
+  return pad
+}
+
 export default function MapView({ plan, selectedId, hour, metric, showHeatmap, focus, onSelectRoute, onFocusCheckpoint }: Props) {
   const container = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MLMap | null>(null)
@@ -148,8 +170,8 @@ export default function MapView({ plan, selectedId, hour, metric, showHeatmap, f
         container: container.current,
         style: STYLE_URL,
         center: US_CENTER,
-        zoom: 3.6,
-        attributionControl: { compact: true },
+        zoom: window.innerWidth < 900 ? 2.5 : 3.6,
+        attributionControl: false,
         fadeDuration: 0,
       })
     } catch (err) {
@@ -159,11 +181,16 @@ export default function MapView({ plan, selectedId, hour, metric, showHeatmap, f
       return
     }
     mapRef.current = map
+    ;(window as unknown as { __spotterMap?: MLMap }).__spotterMap = map // debugging/e2e hook
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right')
+    // Top-right keeps the credit clear of the bottom time dock.
+    map.addControl(new maplibregl.AttributionControl({ compact: true }), 'top-right')
     map.on('error', (e) => {
       if (!map.isStyleLoaded() && String(e.error?.message ?? '').includes('style')) setMapError('Map tiles failed to load.')
     })
     map.on('load', () => {
+      // Start the compact credit collapsed (the (i) button expands it).
+      map.getContainer().querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show')
       const firstSymbol = map.getStyle().layers?.find((l) => l.type === 'symbol')?.id
       map.addSource('heat', { type: 'geojson', data: EMPTY })
       map.addSource('routes', { type: 'geojson', data: EMPTY })
@@ -323,11 +350,7 @@ export default function MapView({ plan, selectedId, hour, metric, showHeatmap, f
     }
     const b = new maplibregl.LngLatBounds()
     plan.routes.forEach((r) => r.geometry.forEach((c) => b.extend(c)))
-    const narrow = window.innerWidth < 900
-    map.fitBounds(b, {
-      padding: narrow ? { top: 40, bottom: 120, left: 30, right: 30 } : { top: 70, bottom: 150, left: 70, right: 70 },
-      duration: 900,
-    })
+    map.fitBounds(b, { padding: overlayPadding(map.getContainer()), duration: 900 })
   }, [plan, ready])
 
   // ---- heatmap radius tracks the grid step so the field reads as continuous
@@ -383,11 +406,17 @@ export default function MapView({ plan, selectedId, hour, metric, showHeatmap, f
     const c = r?.checkpoints[focus.index]
     if (!r || !c) return
     popupRef.current?.remove()
-    popupRef.current = new maplibregl.Popup({ closeButton: true, maxWidth: '280px', offset: 12, className: 'risk-popup' })
+    // On a short (mobile) map, pin the checkpoint just above the dock and open the popup upwards.
+    const narrow = window.innerWidth < 900
+    popupRef.current = new maplibregl.Popup({ closeButton: true, maxWidth: '280px', offset: 12, className: 'risk-popup', ...(narrow ? { anchor: 'bottom' as const } : {}) })
       .setLngLat([c.lon, c.lat])
       .setHTML(popupHtml(p, r.name, c))
       .addTo(map)
-    map.easeTo({ center: [c.lon, c.lat], zoom: Math.max(map.getZoom(), 6.2), duration: 600 })
+    const pad = overlayPadding(map.getContainer())
+    // Centre the checkpoint in the area left visible by the legend and time dock.
+    const h = map.getContainer().clientHeight
+    const offsetY = narrow ? h / 2 - pad.bottom + 28 : (pad.top - pad.bottom) / 2
+    map.easeTo({ center: [c.lon, c.lat], zoom: Math.max(map.getZoom(), 6.2), duration: 600, offset: [(pad.left - pad.right) / 2, offsetY] })
   }, [focus, ready])
 
   return (

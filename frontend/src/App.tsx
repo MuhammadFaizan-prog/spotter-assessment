@@ -84,6 +84,10 @@ export default function App() {
       setHour(0)
       setFocus(null)
       setStatus('ready')
+      // Mobile: bring the summary up under the pinned map.
+      if (window.matchMedia?.('(max-width: 900px)').matches) {
+        requestAnimationFrame(() => document.querySelector('.results')?.scrollIntoView({ block: 'start', behavior: 'smooth' }))
+      }
     } catch (e) {
       if ((e as Error).name === 'AbortError') return
       setError(e instanceof ApiError ? e : new ApiError('Something went wrong while planning.', 0))
@@ -103,7 +107,7 @@ export default function App() {
 
   const req = plan?.request
   return (
-    <div className="app">
+    <div className={plan ? 'app has-plan' : 'app'}>
       <aside className="panel">
         <header className="brand">
           <div className="brand__mark" aria-hidden>

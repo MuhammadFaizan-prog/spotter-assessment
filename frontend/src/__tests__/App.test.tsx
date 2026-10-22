@@ -11,7 +11,7 @@ vi.mock('maplibre-gl', () => {
       throw new Error('Failed to initialize WebGL')
     }
   }
-  return { Map, Popup: class {}, Marker: class {}, NavigationControl: class {}, LngLatBounds: class {} }
+  return { Map, Popup: class {}, Marker: class {}, NavigationControl: class {}, AttributionControl: class {}, LngLatBounds: class {}, setWorkerUrl: () => {} }
 })
 
 describe('App', () => {

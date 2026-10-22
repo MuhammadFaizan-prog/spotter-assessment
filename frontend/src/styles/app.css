@@ -811,9 +811,13 @@ p {
 
 /* ---------- map ---------- */
 .map,
-.map__canvas {
+.map .map__canvas {
+  /* doubled selector: MapLibre's .maplibregl-map sets position: relative,
+     which would collapse the container to 0 px height */
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
 }
 .map__error {
   position: absolute;
@@ -1061,6 +1065,9 @@ p {
 .pin--destination span {
   color: var(--accent);
 }
+.maplibregl-popup.risk-popup {
+  z-index: 3; /* above the map controls */
+}
 .risk-popup .maplibregl-popup-content {
   background: var(--ink-3);
   color: var(--text-1);
@@ -1164,13 +1171,25 @@ p {
     min-height: 100%;
     overflow: visible;
   }
+  /* Map first. Once a plan exists it stays pinned while the panel scrolls
+     beneath it, so tapping a checkpoint row always shows it on the map. */
   .stage {
     order: -1;
-    height: 62vh;
-    min-height: 380px;
+    height: 40vh;
+    min-height: 280px;
+    position: relative;
+    z-index: 3;
+  }
+  .app.has-plan .results,
+  .app.has-plan .tl-row {
+    scroll-margin-top: calc(max(48vh, 340px) + 12px);
+  }
+  .app.has-plan .stage {
     position: sticky;
     top: 0;
-    z-index: 1;
+    height: 48vh;
+    min-height: 340px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
   }
   .panel {
     border-right: 0;
@@ -1178,7 +1197,7 @@ p {
     overflow: visible;
     padding: var(--s-4);
     position: relative;
-    z-index: 2;
+    z-index: 1;
   }
   .stage__overlay {
     padding: var(--s-2);
@@ -1189,8 +1208,35 @@ p {
   .dock {
     padding: var(--s-2) var(--s-3) 4px;
   }
-  .dock__ticks span:nth-child(even) {
+  .dock__top {
+    flex-wrap: nowrap;
+    gap: var(--s-2);
+  }
+  .dock__offset,
+  .switch__label {
     display: none;
+  }
+  .dock__time {
+    font-size: var(--fs-13);
+    white-space: nowrap;
+  }
+  .dock__controls {
+    width: auto;
+    margin-left: auto;
+    gap: var(--s-2);
+  }
+  .dock__controls .segmented__opt {
+    padding-inline: 8px;
+  }
+  .dock__slider {
+    padding-top: var(--s-1);
+  }
+  /* keep Depart, +24 h and +48 h only */
+  .dock__ticks span {
+    display: none;
+  }
+  .dock__ticks span:nth-child(4n + 1) {
+    display: block;
   }
   .stage__hint {
     white-space: normal;

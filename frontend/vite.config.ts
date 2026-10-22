@@ -11,6 +11,7 @@ export default defineConfig({
   plugins: [react()],
   server: { proxy },
   preview: { proxy },
+  worker: { format: 'es' },
   build: {
     chunkSizeWarningLimit: 1500,
   },
