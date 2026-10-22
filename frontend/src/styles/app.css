@@ -1182,13 +1182,13 @@ p {
   }
   .app.has-plan .results,
   .app.has-plan .tl-row {
-    scroll-margin-top: calc(max(48vh, 340px) + 12px);
+    scroll-margin-top: calc(max(52vh, 360px) + 12px);
   }
   .app.has-plan .stage {
     position: sticky;
     top: 0;
-    height: 48vh;
-    min-height: 340px;
+    height: 52vh;
+    min-height: 360px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
   }
   .panel {
@@ -1207,6 +1207,21 @@ p {
   }
   .dock {
     padding: var(--s-2) var(--s-3) 4px;
+  }
+  /* compact popup so it fits above the dock on a short map */
+  .risk-popup .maplibregl-popup-content {
+    padding: var(--s-2) var(--s-3);
+  }
+  .pop__eta {
+    margin: 2px 0 6px;
+  }
+  .pop__grid {
+    grid-template-columns: auto 1fr auto 1fr;
+    gap: 2px 8px;
+  }
+  .pop__why {
+    margin-top: 6px;
+    padding-top: 6px;
   }
   .dock__top {
     flex-wrap: nowrap;
